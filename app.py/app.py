@@ -111,13 +111,35 @@ elif page == "AI Grade Predictor":
     input_data = {}
 
     st.subheader("Student Information")
-
+ 
     for column in reference_df.drop(
         columns=["G1", "G2", "G3"]
     ).columns:
 
-        if reference_df[column].dtype == "object":
+        if pd.api.types.is_numeric_dtype(reference_df[column]):
 
+            numeric_values = pd.to_numeric(
+                reference_df[column], errors="coerce"
+            ).dropna()
+
+            if numeric_values.empty:
+                input_data[column] = 0
+            else:
+                minimum = int(numeric_values.min())
+                maximum = int(numeric_values.max())
+                median_value = int(numeric_values.median())
+
+                if minimum == maximum:
+                    input_data[column] = minimum
+                else:
+                    input_data[column] = st.number_input(
+                        column,
+                        min_value=minimum,
+                        max_value=maximum,
+                        value=max(minimum, min(maximum, median_value))
+                    )
+
+        else:
             options = sorted(
                 reference_df[column].dropna().unique().tolist()
             )
@@ -126,32 +148,6 @@ elif page == "AI Grade Predictor":
                 column,
                 options
             )
-
-        else:
-            numeric_values = pd.to_numeric(
-            reference_df[column], errors="coerce"
-        ).dropna()
-
-        if numeric_values.empty:
-            input_data[column] = st.number_input(
-                column,
-                value=0
-            )
-        else:
-            minimum = int(numeric_values.min())
-            maximum = int(numeric_values.max())
-            median_value = int(numeric_values.median())
-
-            if minimum == maximum:
-                input_data[column] = minimum
-            else:
-                input_data[column] = st.number_input(
-                    column,
-                    min_value=minimum,
-                    max_value=maximum,
-                    value=max(minimum, min(maximum, median_value))
-                )
-
 
     if st.button("Predict Final Grade"):
 
