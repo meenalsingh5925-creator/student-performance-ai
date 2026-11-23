@@ -149,9 +149,29 @@ elif page == "AI Grade Predictor":
                 options
             )
 
+    
     if st.button("Predict Final Grade"):
 
         input_df = pd.DataFrame([input_data])
+
+        input_df = input_df.reindex(
+            columns=model.feature_names_in_
+        )
+        
+        categorical_columns = reference_df.select_dtypes(
+            include=["object"]
+        ).columns.tolist()
+
+        for column in categorical_columns:
+            input_df[column] = (
+                input_df[column].astype(str).astype(object)
+            )
+
+        for column in input_df.columns:
+            if column not in categorical_columns:
+                input_df[column] = pd.to_numeric(
+                    input_df[column]
+                ).astype("int64")
 
         prediction = model.predict(input_df)[0]
 
