@@ -6,7 +6,7 @@ An interactive student performance analytics and machine learning application bu
 
 **Try the live app here:**
 
-https://student-performance-ai-iagrfdbh9cpfjmsxzthsst.streamlit.app
+https://student-performance-ai-nvaprhkzhxy7zusfqtuztw.streamlit.app/
 
 ## 📌 Project Overview
 
