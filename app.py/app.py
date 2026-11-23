@@ -128,16 +128,30 @@ elif page == "AI Grade Predictor":
             )
 
         else:
+            numeric_values = pd.to_numeric(
+            reference_df[column], errors="coerce"
+        ).dropna()
 
-            minimum = int(reference_df[column].min())
-            maximum = int(reference_df[column].max())
-
+        if numeric_values.empty:
             input_data[column] = st.number_input(
                 column,
-                min_value=minimum,
-                max_value=maximum,
-                value=int(reference_df[column].median())
+                value=0
             )
+        else:
+            minimum = int(numeric_values.min())
+            maximum = int(numeric_values.max())
+            median_value = int(numeric_values.median())
+
+            if minimum == maximum:
+                input_data[column] = minimum
+            else:
+                input_data[column] = st.number_input(
+                    column,
+                    min_value=minimum,
+                    max_value=maximum,
+                    value=max(minimum, min(maximum, median_value))
+                )
+
 
     if st.button("Predict Final Grade"):
 
